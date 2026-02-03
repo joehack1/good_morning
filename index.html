@@ -14,34 +14,49 @@
         }
 
         body {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            background: url('https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
             overflow-x: hidden;
-            overflow-y: auto;
             position: relative;
+        }
+
+        /* Overlay for better text readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 154, 158, 0.2);
+            backdrop-filter: blur(2px);
+            z-index: 1;
         }
 
         .container {
             max-width: 800px;
             width: 100%;
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.75);
             border-radius: 25px;
             padding: 40px 30px;
-            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.4);
             position: relative;
             z-index: 10;
             animation: fadeIn 1s ease-out;
+            backdrop-filter: blur(10px);
         }
 
-        /* 3D Glass Effect */
+        /* Enhanced 3D Glass Effect */
         .glass3d { 
-            --filter-glass3d: blur(8px) brightness(1.11) saturate(1.5); 
-            --color-glass3d: pink; 
+            --filter-glass3d: blur(12px) brightness(1.15) saturate(1.8); 
+            --color-glass3d: rgba(255, 182, 193, 0.6); 
             --noise-glass3d: url("https://www.transparenttextures.com/patterns/cartographer.png"); 
 
             position: relative; 
@@ -130,6 +145,7 @@
             max-width: 400px;
             outline: none;
             transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.9);
         }
 
         input:focus {
@@ -144,6 +160,7 @@
             flex-wrap: wrap;
             margin-top: 30px;
             position: relative;
+            min-height: 80px;
         }
 
         .btn {
@@ -177,8 +194,11 @@
         #noBtn {
             background: linear-gradient(135deg, #b8b8b8, #d9d9d9);
             color: #666;
-            position: relative;
-            transition: all 0.1s;
+            position: absolute;
+            transition: all 0.2s ease;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .result-message {
@@ -192,35 +212,21 @@
             display: none;
         }
 
-        .signature {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #ff4d6d;
-            font-style: italic;
-            opacity: 0.8;
-            animation: fadeIn 2s ease-out;
-        }
-
+        /* Footer Styling */
         .footer {
-            margin-top: 40px;
-            padding: 25px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
             width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 800px;
+            margin-top: 30px;
+            padding: 0 20px;
         }
 
         .contact-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.85);
             border-radius: 20px;
             padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(15px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
@@ -231,6 +237,7 @@
             transform: translateY(-5px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
             border-color: rgba(255, 77, 109, 0.3);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .contact-card h3 {
@@ -257,9 +264,9 @@
             transition: all 0.3s ease;
             padding: 10px 20px;
             border-radius: 30px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .contact-item:hover {
@@ -278,63 +285,6 @@
 
         .contact-item:hover i {
             transform: scale(1.1) rotate(5deg);
-        }
-
-        /* Responsive styles for footer */
-        @media (max-width: 768px) {
-            .footer {
-                margin-top: 30px;
-                padding: 20px;
-            }
-            
-            .footer h3 {
-                font-size: 1.1rem;
-                margin-bottom: 10px;
-            }
-            
-            .contact-info {
-                gap: 20px;
-                margin-top: 10px;
-            }
-            
-            .contact-item {
-                font-size: 0.9rem;
-                gap: 8px;
-                padding: 6px 12px;
-            }
-            
-            .contact-item i {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .footer {
-                margin-top: 25px;
-                padding: 15px;
-            }
-            
-            .footer h3 {
-                font-size: 1rem;
-                margin-bottom: 8px;
-            }
-            
-            .contact-info {
-                gap: 15px;
-                margin-top: 8px;
-            }
-            
-            .contact-item {
-                font-size: 0.85rem;
-                gap: 6px;
-                padding: 5px 10px;
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .contact-item i {
-                font-size: 1rem;
-            }
         }
 
         /* Flowers and hearts for explosion effect */
@@ -360,10 +310,11 @@
         /* Floating hearts in background */
         .floating-heart {
             position: absolute;
-            color: rgba(255, 77, 109, 0.3);
+            color: rgba(255, 77, 109, 0.4);
             font-size: 2rem;
             z-index: 1;
             animation: float 8s infinite linear;
+            pointer-events: none;
         }
 
         /* Animations */
@@ -384,8 +335,10 @@
         }
 
         @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); }
-            100% { transform: translateY(-100px) rotate(360deg); }
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
 
         @keyframes explode {
@@ -410,14 +363,18 @@
             .message { font-size: 1rem; }
             .btn { padding: 12px 25px; font-size: 1rem; min-width: 120px; }
             .result-message { font-size: 1.8rem; }
+            .contact-info { gap: 20px; }
+            .contact-item { font-size: 0.9rem; }
         }
 
         @media (max-width: 480px) {
             .container { padding: 25px 15px; }
             h1 { font-size: 1.5rem; }
             .heart { font-size: 2.5rem; }
-            .button-container { gap: 12px; }
+            .button-container { gap: 15px; }
             .btn { padding: 12px 18px; font-size: 0.9rem; min-width: 110px; }
+            .contact-info { flex-direction: column; gap: 15px; }
+            .contact-card { padding: 20px; }
         }
     </style>
 </head>
@@ -452,7 +409,8 @@
         <div class="result-message" id="resultMessage"></div>
     </div>
 
-    <div class="footer">
+    <!-- Footer with contact info -->
+    <footer class="footer">
         <div class="contact-card">
             <h3>Developed by Joel Loter</h3>
             <div class="contact-info">
@@ -466,7 +424,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </footer>
 
     <script>
         // Create floating hearts in background
@@ -494,65 +452,70 @@
             }
         }
 
-        // Make the NO button move randomly when hovered
+        // Enhanced NO button movement - stays within container bounds
         function setupNoButton() {
             const noBtn = document.getElementById('noBtn');
-            let moveTimeout;
+            const buttonContainer = document.querySelector('.button-container');
+            let isMoving = false;
             
-            noBtn.addEventListener('mouseover', function() {
-                // Clear any existing timeout
-                if (moveTimeout) clearTimeout(moveTimeout);
+            // Set button container to relative positioning for absolute child positioning
+            buttonContainer.style.position = 'relative';
+            
+            // Function to move the button to a random position within container
+            function moveButtonRandomly() {
+                if (isMoving) return;
                 
-                // Get button container dimensions
-                const container = document.querySelector('.button-container');
-                const containerRect = container.getBoundingClientRect();
+                isMoving = true;
                 
-                // Calculate max movement area
-                const maxX = containerRect.width - noBtn.offsetWidth;
-                const maxY = containerRect.height - noBtn.offsetHeight;
+                const containerRect = buttonContainer.getBoundingClientRect();
+                const btnRect = noBtn.getBoundingClientRect();
+                
+                // Calculate max positions ensuring button stays fully visible
+                const maxX = containerRect.width - btnRect.width;
+                const maxY = containerRect.height - btnRect.height;
+                
+                // Ensure we have positive values (for very small screens)
+                const safeMaxX = Math.max(10, maxX);
+                const safeMaxY = Math.max(10, maxY);
                 
                 // Generate random position within container
-                const randomX = Math.random() * maxX;
-                const randomY = Math.random() * maxY;
+                const randomX = Math.random() * safeMaxX;
+                const randomY = Math.random() * safeMaxY;
                 
                 // Apply the new position with smooth transition
-                noBtn.style.transition = 'all 0.5s ease';
-                noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                noBtn.style.transition = 'all 0.4s ease';
+                noBtn.style.left = `${randomX}px`;
+                noBtn.style.top = `${randomY}px`;
+                noBtn.style.transform = 'translate(0, 0)';
                 
-                // After movement, reset transition for next hover
-                moveTimeout = setTimeout(() => {
-                    noBtn.style.transition = 'all 0.1s';
-                }, 500);
+                // Reset after movement
+                setTimeout(() => {
+                    isMoving = false;
+                }, 400);
+            }
+            
+            // Move on hover
+            noBtn.addEventListener('mouseover', function() {
+                moveButtonRandomly();
             });
             
             // Also move when clicked (extra escape)
             noBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                moveButtonRandomly();
                 
-                // Get button container dimensions
-                const container = document.querySelector('.button-container');
-                const containerRect = container.getBoundingClientRect();
-                
-                // Calculate max movement area
-                const maxX = containerRect.width - noBtn.offsetWidth;
-                const maxY = containerRect.height - noBtn.offsetHeight;
-                
-                // Generate random position within container
-                const randomX = Math.random() * maxX;
-                const randomY = Math.random() * maxY;
-                
-                // Apply the new position with transition
-                noBtn.style.transition = 'all 0.3s ease';
-                noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                
-                // Add a funny message
+                // Add funny messages
                 const messages = [
                     "Are you sure? 😢",
                     "Think again! 💔",
                     "Please? 🥺",
                     "You're breaking my heart!",
                     "I'll keep asking!",
-                    "Try the other button! 😉"
+                    "Try the other button! 😉",
+                    "Ouch! That hurts!",
+                    "You missed me!",
+                    "Not so easy!",
+                    "Catch me if you can!"
                 ];
                 const randomMsg = messages[Math.floor(Math.random() * messages.length)];
                 noBtn.textContent = randomMsg;
@@ -562,6 +525,23 @@
                     noBtn.textContent = "NO 😢";
                 }, 1500);
             });
+            
+            // Initial position in the center
+            const containerRect = buttonContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            const initialX = (containerRect.width - btnRect.width) / 2;
+            const initialY = 0;
+            
+            noBtn.style.left = `${initialX}px`;
+            noBtn.style.top = `${initialY}px`;
+            
+            // Auto-move every few seconds if user is inactive
+            setInterval(() => {
+                // Only auto-move if button hasn't been interacted with recently
+                if (!isMoving && Math.random() > 0.7) {
+                    moveButtonRandomly();
+                }
+            }, 3000);
         }
 
         // Create explosion effect for YES button
@@ -685,7 +665,7 @@
                 nameInput.style.display = 'none';
                 
                 // Change container style
-                container.style.background = 'linear-gradient(135deg, #ffccd5, #fff0f3)';
+                container.style.background = 'linear-gradient(135deg, rgba(255, 204, 213, 0.9), rgba(255, 240, 243, 0.9))';
                 container.style.border = '5px solid #ff4d6d';
                 
                 // Play heart animation
