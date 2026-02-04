@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Web Clone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Helvetica, sans-serif;
+        }
+
+        body {
+            background: #0c1317;
+            color: #e9edef;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #0c1317;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 30%;
+            min-width: 350px;
+            background: #111b21;
+            border-right: 1px solid #2f3b43;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: #202c33;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-actions {
+            display: flex;
+            gap: 20px;
+            color: #aebac1;
+        }
+
+        .sidebar-actions i {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Search bar */
+        .search-container {
+            padding: 10px 16px;
+            background: #111b21;
+        }
+
+        .search-box {
+            background: #202c33;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            color: #8696a0;
+        }
+
+        .search-box i {
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e9edef;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        /* Chat list */
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 12px 16px;
+            border-bottom: 1px solid #222e35;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .chat-item:hover {
+            background: #202c33;
+        }
+
+        .chat-item.active {
+            background: #2a3942;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .chat-info-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .chat-name {
+            font-weight: 500;
+            font-size: 17px;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: #8696a0;
+        }
+
+        .chat-preview {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-message {
+            color: #8696a0;
+            font-size: 14px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .unread-count {
+            background: #00a884;
+            color: #111b21;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+
+        /* Main chat area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0c1317;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: #202c33;
+            border-left: 1px solid #2f3b43;
+        }
+
+        .chat-contact {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-contact-info {
+            margin-left: 15px;
+        }
+
+        .chat-contact-name {
+            font-weight: 500;
+            font-size: 17px;
+        }
+
+        .chat-contact-status {
+            color: #8696a0;
+            font-size: 13px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 25px;
+            color: #aebac1;
+        }
+
+        .chat-actions i {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Messages area */
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_686b98c9fdffef3f63127759e2057750.png');
+            background-color: #0a1014;
+            background-blend-mode: overlay;
+        }
+
+        .message-date {
+            text-align: center;
+            color: #8696a0;
+            font-size: 12.5px;
+            margin: 20px 0;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 10px;
+            max-width: 65%;
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .message-content {
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.received .message-content {
+            background: #202c33;
+            border-top-left-radius: 0;
+        }
+
+        .message.sent .message-content {
+            background: #005c4b;
+            border-top-right-radius: 0;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #ffffff99;
+            text-align: right;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .message-time i {
+            margin-left: 5px;
+            font-size: 13px;
+        }
+
+        /* Message input area */
+        .message-input-container {
+            padding: 10px 16px;
+            background: #202c33;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 20px;
+            color: #8696a0;
+            font-size: 24px;
+        }
+
+        .input-actions i {
+            cursor: pointer;
+        }
+
+        .message-input {
+            flex: 1;
+            background: #2a3942;
+            border-radius: 8px;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e9edef;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        .message-input i {
+            color: #8696a0;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .send-button {
+            background: #00a884;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .send-button i {
+            font-size: 24px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1100px) {
+            .sidebar {
+                width: 40%;
+                min-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+            
+            .chat-area {
+                display: none;
+            }
+            
+            .chat-area.active {
+                display: flex;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #374045;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #455a64;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left sidebar with chat list -->
+        <div class="sidebar">
+            <!-- Sidebar header with user info and actions -->
+            <div class="sidebar-header">
+                <div class="user-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar">
+                </div>
+                <div class="sidebar-actions">
+                    <i class="fas fa-users" title="Communities"></i>
+                    <i class="fas fa-circle-notch" title="Status"></i>
+                    <i class="fas fa-comment-alt" title="New chat"></i>
+                    <i class="fas fa-ellipsis-v" title="Menu"></i>
+                </div>
+            </div>
+
+            <!-- Search bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search or start new chat">
+                </div>
+            </div>
+
+            <!-- Chat list -->
+            <div class="chat-list">
+                <!-- Chat item 1 -->
+                <div class="chat-item active" data-chat="1">
+                    <div class="chat-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-info-header">
+                            <div class="chat-name">Sarah Johnson</div>
+                            <div class="chat-time">10:42 AM</div>
+                        </div>
+                        <div class="chat-preview">
+                            <div class="chat-message">Hey, are we still meeting tomorrow?</div>
+                            <div class="unread-count">2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat item 2 -->
+                <div class="chat-item" data-chat="2">
+                    <div class="chat-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David Chen">
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-info-header">
+                            <div class="chat-name">David Chen</div>
+                            <div class="chat-time">Yesterday</div>
+                        </div>
+                        <div class="chat-preview">
+                            <div class="chat-message">Sent the project files, please review</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat item 3 -->
+                <div class="chat-item" data-chat="3">
+                    <div class="chat-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Emma Wilson">
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-info-header">
+                            <div class="chat-name">Emma Wilson</div>
+                            <div class="chat-time">Yesterday</div>
+                        </div>
+                        <div class="chat-preview">
+                            <div class="chat-message"><i class="fas fa-camera"></i> Photo</div>
+                            <div class="unread-count">5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat item 4 -->
+                <div class="chat-item" data-chat="4">
+                    <div class="chat-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Alex Rivera">
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-info-header">
+                            <div class="chat-name">Alex Rivera</div>
+                            <div class="chat-time">Friday</div>
+                        </div>
+                        <div class="chat-preview">
+                            <div class="chat-message">Thanks for your help with the presentation!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat item 5 -->
+                <div class="chat-item" data-chat="5">
+                    <div class="chat-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Family Group">
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-info-header">
+                            <div class="chat-name">Family Group</div>
+                            <div class="chat-time">Thursday</div>
+                        </div>
+                        <div class="chat-preview">
+                            <div class="chat-message">Mom: Don't forget to call grandma</div>
+                            <div class="unread-count">12</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main chat area -->
+        <div class="chat-area active">
+            <!-- Chat header -->
+            <div class="chat-header">
+                <div class="chat-contact">
+                    <div class="chat-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                    </div>
+                    <div class="chat-contact-info">
+                        <div class="chat-contact-name">Sarah Johnson</div>
+                        <div class="chat-contact-status">last seen today at 9:15 AM</div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <i class="fas fa-search" title="Search"></i>
+                    <i class="fas fa-paperclip" title="Attach"></i>
+                    <i class="fas fa-ellipsis-v" title="Menu"></i>
+                </div>
+            </div>
+
+            <!-- Messages container -->
+            <div class="messages-container" id="messagesContainer">
+                <!-- Date separator -->
+                <div class="message-date">TODAY</div>
+
+                <!-- Received message -->
+                <div class="message received">
+                    <div class="message-content">
+                        Hey! How are you doing?
+                        <div class="message-time">
+                            10:30 AM
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sent message -->
+                <div class="message sent">
+                    <div class="message-content">
+                        I'm good! Just finished the project we talked about.
+                        <div class="message-time">
+                            10:32 AM <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Received message -->
+                <div class="message received">
+                    <div class="message-content">
+                        That's great! Can you send me the details?
+                        <div class="message-time">
+                            10:35 AM
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sent message -->
+                <div class="message sent">
+                    <div class="message-content">
+                        Sure, I'll email them to you right now.
+                        <div class="message-time">
+                            10:36 AM <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Received message -->
+                <div class="message received">
+                    <div class="message-content">
+                        Thanks! Are we still meeting tomorrow at 3 PM?
+                        <div class="message-time">
+                            10:40 AM
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New messages indicator -->
+                <div class="message-date">NEW MESSAGES</div>
+
+                <!-- Sent message -->
+                <div class="message sent">
+                    <div class="message-content">
+                        Yes, definitely! I'll bring the prototype with me.
+                        <div class="message-time">
+                            10:42 AM <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message input area -->
+            <div class="message-input-container">
+                <div class="input-actions">
+                    <i class="far fa-grin" title="Emoji"></i>
+                    <i class="fas fa-paperclip" title="Attach"></i>
+                </div>
+                <div class="message-input">
+                    <input type="text" placeholder="Type a message" id="messageInput">
+                    <i class="fas fa-microphone" title="Voice message"></i>
+                </div>
+                <div class="send-button" id="sendButton">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const chatItems = document.querySelectorAll('.chat-item');
+        
+        // Send message function
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText === '') return;
+            
+            // Create new message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0');
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${messageText}
+                    <div class="message-time">
+                        ${timeString} <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            `;
+            
+            // Add to messages container
+            messagesContainer.appendChild(messageDiv);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Update chat preview in sidebar
+            const activeChat = document.querySelector('.chat-item.active');
+            if (activeChat) {
+                const chatPreview = activeChat.querySelector('.chat-message');
+                chatPreview.textContent = messageText.length > 30 ? messageText.substring(0, 30) + '...' : messageText;
+                
+                // Update timestamp
+                const chatTime = activeChat.querySelector('.chat-time');
+                chatTime.textContent = timeString;
+                
+                // Move chat to top of list
+                const chatList = document.querySelector('.chat-list');
+                chatList.insertBefore(activeChat, chatList.firstChild);
+            }
+            
+            // Simulate a reply after 1 second
+            setTimeout(simulateReply, 1000);
+        }
+        
+        // Simulate a reply from the other person
+        function simulateReply() {
+            const replies = [
+                "Got it, thanks!",
+                "Sounds good to me.",
+                "I'll check it out.",
+                "See you tomorrow then!",
+                "Looking forward to it."
+            ];
+            
+            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message received';
+            
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0');
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${randomReply}
+                    <div class="message-time">
+                        ${timeString}
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Update chat preview
+            const activeChat = document.querySelector('.chat-item.active');
+            if (activeChat) {
+                const chatPreview = activeChat.querySelector('.chat-message');
+                chatPreview.textContent = randomReply.length > 30 ? randomReply.substring(0, 30) + '...' : randomReply;
+                
+                const chatTime = activeChat.querySelector('.chat-time');
+                chatTime.textContent = timeString;
+            }
+        }
+        
+        // Switch between chats
+        chatItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all chats
+                chatItems.forEach(chat => chat.classList.remove('active'));
+                
+                // Add active class to clicked chat
+                this.classList.add('active');
+                
+                // Update chat header with selected contact info
+                const chatName = this.querySelector('.chat-name').textContent;
+                const chatAvatar = this.querySelector('.chat-avatar img').src;
+                
+                const chatHeaderAvatar = document.querySelector('.chat-header .chat-avatar img');
+                const chatHeaderName = document.querySelector('.chat-contact-name');
+                
+                chatHeaderAvatar.src = chatAvatar;
+                chatHeaderName.textContent = chatName;
+                
+                // Clear messages and add some sample messages for the new chat
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = `
+                    <div class="message-date">TODAY</div>
+                    <div class="message received">
+                        <div class="message-content">
+                            Hey there! I'm ${chatName.split(' ')[0]}.
+                            <div class="message-time">
+                                10:30 AM
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message sent">
+                        <div class="message-content">
+                            Hi ${chatName.split(' ')[0]}! Nice to chat with you.
+                            <div class="message-time">
+                                10:32 AM <i class="fas fa-check-double"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        });
+        
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Initialize with messages scrolled to bottom
+        window.onload = function() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        };
+    </script>
+</body>
+</html>
