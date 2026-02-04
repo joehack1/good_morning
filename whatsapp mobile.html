@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp Mobile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0c1317;
+            color: #ffffff;
+            overflow-x: hidden;
+            height: 100vh;
+            touch-action: pan-y;
+        }
+
+        /* Mobile app container */
+        .app-container {
+            width: 100%;
+            height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #0c1317;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Status bar (like phone status bar) */
+        .status-bar {
+            height: 24px;
+            background: #008069;
+            color: white;
+            font-size: 12px;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Header styles */
+        .header {
+            background: #008069;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title span {
+            font-size: 22px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 24px;
+            font-size: 20px;
+        }
+
+        .header-actions i {
+            cursor: pointer;
+        }
+
+        /* Tab navigation */
+        .tabs {
+            display: flex;
+            background: #008069;
+            color: rgba(255, 255, 255, 0.7);
+            position: relative;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            font-size: 15px;
+            font-weight: 500;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            color: white;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: white;
+        }
+
+        .tab-badge {
+            background: white;
+            color: #008069;
+            font-size: 12px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            display: inline-block;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #00a884;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 90;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background: #0c1317;
+            position: relative;
+        }
+
+        /* Stories section */
+        .stories-container {
+            padding: 16px 0;
+            background: #111b21;
+            border-bottom: 1px solid #222e35;
+        }
+
+        .stories-title {
+            padding: 0 16px 12px;
+            font-size: 15px;
+            color: #8696a0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stories-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 16px;
+            gap: 16px;
+        }
+
+        .stories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+        }
+
+        .story-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            padding: 2px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #111b21;
+        }
+
+        .story-name {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8696a0;
+            text-align: center;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .my-story .story-avatar {
+            background: #2a3942;
+        }
+
+        .my-story .story-avatar::after {
+            content: '+';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background: #008069;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #111b21;
+        }
+
+        /* Chat list */
+        .chat-list {
+            background: #0c1317;
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 12px 16px;
+            border-bottom: 1px solid #222e35;
+            cursor: pointer;
+            transition: background 0.2s;
+            align-items: center;
+        }
+
+        .chat-item:hover,
+        .chat-item:active {
+            background: #202c33;
+        }
+
+        .chat-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 12px;
+            position: relative;
+        }
+
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #00a884;
+            border-radius: 50%;
+            border: 2px solid #0c1317;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .chat-name {
+            font-weight: 500;
+            font-size: 17px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: #8696a0;
+            white-space: nowrap;
+        }
+
+        .chat-preview {
+            display: flex;
+            align-items: center;
+            color: #8696a0;
+            font-size: 14px;
+        }
+
+        .chat-message {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .unread-count {
+            background: #00a884;
+            color: #111b21;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+
+        .muted-icon {
+            color: #8696a0;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+        /* Chat screen */
+        .chat-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a1014;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 50;
+        }
+
+        .chat-screen.active {
+            transform: translateX(0);
+        }
+
+        .chat-header {
+            background: #008069;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .back-button {
+            font-size: 20px;
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .chat-contact {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .chat-contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 12px;
+        }
+
+        .chat-contact-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-contact-info {
+            flex: 1;
+        }
+
+        .chat-contact-name {
+            font-weight: 500;
+            font-size: 17px;
+        }
+
+        .chat-contact-status {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 20px;
+            font-size: 20px;
+        }
+
+        .chat-header-actions i {
+            cursor: pointer;
+        }
+
+        /* Messages area */
+        .messages-container {
+            flex: 1;
+            padding: 16px 8px;
+            overflow-y: auto;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-dark_9f39b5c8c8c5b0e7293c9c5b5b0e7293.png');
+            background-color: #0a1014;
+            background-blend-mode: overlay;
+        }
+
+        .message-date {
+            text-align: center;
+            color: #8696a0;
+            font-size: 12.5px;
+            margin: 20px 0;
+            background: #1e2a30;
+            padding: 5px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 8px;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .message-content {
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            word-wrap: break-word;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .message.received .message-content {
+            background: #202c33;
+            border-top-left-radius: 0;
+            color: #e9edef;
+        }
+
+        .message.sent .message-content {
+            background: #005c4b;
+            border-top-right-radius: 0;
+            color: #e9edef;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #ffffff99;
+            text-align: right;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 3px;
+        }
+
+        /* Message input area */
+        .message-input-container {
+            padding: 8px 12px;
+            background: #202c33;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 20px;
+            color: #8696a0;
+            font-size: 22px;
+        }
+
+        .input-actions i {
+            cursor: pointer;
+        }
+
+        .message-input {
+            flex: 1;
+            background: #2a3942;
+            border-radius: 24px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e9edef;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .message-input i {
+            color: #8696a0;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .send-button {
+            background: #00a884;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            display: flex;
+            background: #202c33;
+            border-top: 1px solid #2f3b43;
+            padding: 8px 0;
+            position: relative;
+            z-index: 80;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            color: #8696a0;
+            padding: 8px 0;
+            font-size: 22px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #00a884;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #00a884;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: 2px;
+            right: 25%;
+            background: #00a884;
+            color: white;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Camera screen */
+        .camera-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .camera-screen.active {
+            transform: translateY(0);
+        }
+
+        .camera-header {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .camera-preview {
+            flex: 1;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .camera-controls {
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .capture-button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        /* Swipeable tabs */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* For mobile scrolling */
+        .content::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+
+        /* Responsive adjustments for very small screens */
+        @media (max-width: 350px) {
+            .chat-avatar {
+                width: 45px;
+                height: 45px;
+                margin-right: 10px;
+            }
+            
+            .header-actions {
+                gap: 16px;
+            }
+            
+            .fab {
+                width: 50px;
+                height: 50px;
+                bottom: 80px;
+                right: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Status bar (like phone) -->
+        <div class="status-bar">
+            <div class="status-bar-left">
+                <span>9:41</span>
+            </div>
+            <div class="status-bar-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- Main header -->
+        <div class="header">
+            <div class="header-title">
+                <span>WhatsApp</span>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-camera" id="cameraButton"></i>
+                <i class="fas fa-search"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="chats">
+                CHATS <span class="tab-badge">3</span>
+            </div>
+            <div class="tab" data-tab="status">
+                STATUS
+            </div>
+            <div class="tab" data-tab="calls">
+                CALLS
+            </div>
+        </div>
+
+        <!-- Content area with swipeable tabs -->
+        <div class="content">
+            <!-- Chats Tab -->
+            <div class="tab-content active" id="chats-tab">
+                <!-- Stories section -->
+                <div class="stories-container">
+                    <div class="stories-title">
+                        <span>Recent updates</span>
+                        <span><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                    <div class="stories-scroll">
+                        <div class="story-item my-story">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="My Story">
+                            </div>
+                            <div class="story-name">My status</div>
+                        </div>
+                        <div class="story-item">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah">
+                            </div>
+                            <div class="story-name">Sarah</div>
+                        </div>
+                        <div class="story-item">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David">
+                            </div>
+                            <div class="story-name">David</div>
+                        </div>
+                        <div class="story-item">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Emma">
+                            </div>
+                            <div class="story-name">Emma</div>
+                        </div>
+                        <div class="story-item">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Alex">
+                            </div>
+                            <div class="story-name">Alex</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat list -->
+                <div class="chat-list">
+                    <!-- Archived chats -->
+                    <div class="chat-item archived">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/11.jpg" alt="Archived">
+                            <div class="online-indicator"></div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Archived</div>
+                                <div class="chat-time">Yesterday</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">You: Okay, see you then</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pinned chats -->
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Family Group">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Family Group <i class="fas fa-volume-mute muted-icon"></i></div>
+                                <div class="chat-time">10:42</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Mom: Don't forget to call grandma</div>
+                                <div class="unread-count">12</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regular chats -->
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                            <div class="online-indicator"></div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Sarah Johnson</div>
+                                <div class="chat-time">10:42</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Hey, are we still meeting tomorrow?</div>
+                                <div class="unread-count">2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David Chen">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">David Chen</div>
+                                <div class="chat-time">Yesterday</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Sent the project files, please review</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Emma Wilson">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Emma Wilson</div>
+                                <div class="chat-time">Yesterday</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message"><i class="fas fa-camera"></i> Photo</div>
+                                <div class="unread-count">5</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Alex Rivera">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Alex Rivera</div>
+                                <div class="chat-time">Friday</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Thanks for your help with the presentation!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Tab -->
+            <div class="tab-content" id="status-tab">
+                <div class="chat-list">
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="My Status">
+                            </div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">My status</div>
+                                <div class="chat-time">Tap to add status update</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Add to my status</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stories-title" style="padding: 16px; border-bottom: none;">
+                        Recent updates
+                    </div>
+                    
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah">
+                            </div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Sarah Johnson</div>
+                                <div class="chat-time">10:30 AM</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <div class="story-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David">
+                            </div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">David Chen</div>
+                                <div class="chat-time">Yesterday, 9:15 PM</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">Yesterday</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calls Tab -->
+            <div class="tab-content" id="calls-tab">
+                <div class="chat-list">
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Sarah Johnson</div>
+                                <div class="chat-time">10:42</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">
+                                    <i class="fas fa-phone" style="color: #00a884; margin-right: 5px;"></i>
+                                    Outgoing • 5 min
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David Chen">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">David Chen</div>
+                                <div class="chat-time">Yesterday</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">
+                                    <i class="fas fa-video" style="color: #00a884; margin-right: 5px;"></i>
+                                    Incoming • 12 min
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-item">
+                        <div class="chat-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Emma Wilson">
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <div class="chat-name">Emma Wilson</div>
+                                <div class="chat-time">2 days ago</div>
+                            </div>
+                            <div class="chat-preview">
+                                <div class="chat-message">
+                                    <i class="fas fa-phone" style="color: #f44336; margin-right: 5px;"></i>
+                                    Missed • 2 days ago
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" id="newChatButton">
+            <i class="fas fa-message"></i>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-nav="chats">
+                <i class="fas fa-message"></i>
+                <div class="nav-badge">3</div>
+            </div>
+            <div class="nav-item" data-nav="status">
+                <i class="fas fa-circle"></i>
+            </div>
+            <div class="nav-item" data-nav="calls">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="nav-item" data-nav="settings">
+                <i class="fas fa-gear"></i>
+            </div>
+        </div>
+
+        <!-- Chat Screen (hidden by default) -->
+        <div class="chat-screen" id="chatScreen">
+            <div class="chat-header">
+                <div class="back-button" id="backButton">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="chat-contact">
+                    <div class="chat-contact-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                    </div>
+                    <div class="chat-contact-info">
+                        <div class="chat-contact-name">Sarah Johnson</div>
+                        <div class="chat-contact-status">online</div>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <i class="fas fa-video"></i>
+                    <i class="fas fa-phone"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            
+            <div class="messages-container" id="messagesContainer">
+                <div class="message-date">TODAY</div>
+                
+                <div class="message received">
+                    <div class="message-content">
+                        Hey! How are you doing?
+                        <div class="message-time">
+                            10:30 AM
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message sent">
+                    <div class="message-content">
+                        I'm good! Just finished the project we talked about.
+                        <div class="message-time">
+                            10:32 AM <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message received">
+                    <div class="message-content">
+                        That's great! Can you send me the details?
+                        <div class="message-time">
+                            10:35 AM
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message sent">
+                    <div class="message-content">
+                        Sure, I'll email them to you right now.
+                        <div class="message-time">
+                            10:36 AM <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message received">
+                    <div class="message-content">
+                        Thanks! Are we still meeting tomorrow at 3 PM?
+                        <div class="message-time">
+                            10:40 AM
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="message-input-container">
+                <div class="input-actions">
+                    <i class="far fa-face-smile"></i>
+                    <i class="fas fa-paperclip"></i>
+                </div>
+                <div class="message-input">
+                    <input type="text" placeholder="Message" id="messageInput">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div class="send-button" id="sendButton">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camera Screen (hidden by default) -->
+        <div class="camera-screen" id="cameraScreen">
+            <div class="camera-header">
+                <i class="fas fa-times" id="closeCamera"></i>
+                <div>Camera</div>
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="camera-preview">
+                <div style="color: white; text-align: center;">
+                    <i class="fas fa-camera" style="font-size: 60px; margin-bottom: 20px;"></i>
+                    <p>Camera preview would appear here</p>
+                </div>
+            </div>
+            <div class="camera-controls">
+                <div class="capture-button" id="captureButton"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const chatScreen = document.getElementById('chatScreen');
+        const backButton = document.getElementById('backButton');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const chatItems = document.querySelectorAll('.chat-item:not(.archived)');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const navItems = document.querySelectorAll('.nav-item');
+        const newChatButton = document.getElementById('newChatButton');
+        const cameraButton = document.getElementById('cameraButton');
+        const cameraScreen = document.getElementById('cameraScreen');
+        const closeCamera = document.getElementById('closeCamera');
+        const captureButton = document.getElementById('captureButton');
+
+        // Open chat screen when clicking on a chat
+        chatItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Get chat info
+                const chatName = this.querySelector('.chat-name').textContent;
+                const chatAvatar = this.querySelector('.chat-avatar img').src;
+                
+                // Update chat screen header
+                document.querySelector('.chat-contact-name').textContent = chatName;
+                document.querySelector('.chat-contact-avatar img').src = chatAvatar;
+                
+                // Open chat screen
+                chatScreen.classList.add('active');
+                
+                // Clear unread count for this chat
+                const unreadCount = this.querySelector('.unread-count');
+                if (unreadCount) {
+                    unreadCount.remove();
+                    
+                    // Update tab badge
+                    const tabBadge = document.querySelector('.tab-badge');
+                    if (tabBadge) {
+                        let currentCount = parseInt(tabBadge.textContent);
+                        if (currentCount > 0) {
+                            currentCount--;
+                            tabBadge.textContent = currentCount;
+                            if (currentCount === 0) {
+                                tabBadge.style.display = 'none';
+                            }
+                        }
+                    }
+                    
+                    // Update bottom nav badge
+                    const navBadge = document.querySelector('.nav-badge');
+                    if (navBadge) {
+                        let currentCount = parseInt(navBadge.textContent);
+                        if (currentCount > 0) {
+                            currentCount--;
+                            navBadge.textContent = currentCount;
+                            if (currentCount === 0) {
+                                navBadge.style.display = 'none';
+                            }
+                        }
+                    }
+                }
+                
+                // Scroll to bottom of messages
+                setTimeout(() => {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 100);
+            });
+        });
+
+        // Close chat screen
+        backButton.addEventListener('click', function() {
+            chatScreen.classList.remove('active');
+        });
+
+        // Send message
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText === '') return;
+            
+            // Create new message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0');
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${messageText}
+                    <div class="message-time">
+                        ${timeString} <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            `;
+            
+            // Add to messages container
+            messagesContainer.appendChild(messageDiv);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Simulate a reply after 1-2 seconds
+            setTimeout(simulateReply, 1000 + Math.random() * 1000);
+        }
+
+        // Simulate a reply
+        function simulateReply() {
+            const replies = [
+                "Got it, thanks!",
+                "Sounds good to me.",
+                "I'll check it out.",
+                "See you tomorrow then!",
+                "Looking forward to it.",
+                "Okay, perfect!",
+                "Thanks for letting me know."
+            ];
+            
+            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message received';
+            
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0');
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${randomReply}
+                    <div class="message-time">
+                        ${timeString}
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Update tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update tab contents
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `${tabId}-tab`) {
+                        content.classList.add('active');
+                    }
+                });
+                
+                // Update bottom nav
+                navItems.forEach(nav => nav.classList.remove('active'));
+                const correspondingNav = document.querySelector(`.nav-item[data-nav="${tabId}"]`);
+                if (correspondingNav) {
+                    correspondingNav.classList.add('active');
+                }
+            });
+        });
+
+        // Bottom nav switching
+        navItems.forEach(nav => {
+            nav.addEventListener('click', function() {
+                const navId = this.getAttribute('data-nav');
+                
+                // Update bottom nav
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update tabs if it's chats, status, or calls
+                if (navId === 'chats' || navId === 'status' || navId === 'calls') {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    const correspondingTab = document.querySelector(`.tab[data-tab="${navId}"]`);
+                    if (correspondingTab) {
+                        correspondingTab.classList.add('active');
+                    }
+                    
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${navId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+                
+                // Settings would open a settings screen in a real app
+                if (navId === 'settings') {
+                    alert('Settings screen would open here in a full implementation');
+                    // Switch back to chats tab
+                    document.querySelector('.nav-item[data-nav="chats"]').classList.add('active');
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // New chat button
+        newChatButton.addEventListener('click', function() {
+            alert('New chat screen would open here');
+        });
+
+        // Camera button
+        cameraButton.addEventListener('click', function() {
+            cameraScreen.classList.add('active');
+        });
+
+        // Close camera
+        closeCamera.addEventListener('click', function() {
+            cameraScreen.classList.remove('active');
+        });
+
+        // Capture photo
+        captureButton.addEventListener('click', function() {
+            alert('Photo captured! Camera would close and photo would be sent.');
+            cameraScreen.classList.remove('active');
+        });
+
+        // Event listeners for sending messages
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Simulate time update in status bar
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = hours + ':' + minutes;
+            
+            document.querySelector('.status-bar-left span').textContent = timeString;
+        }
+
+        // Update time every minute
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Initialize with messages scrolled to bottom
+        window.onload = function() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Add some initial messages to make it look active
+            setTimeout(() => {
+                const initialMessages = [
+                    {text: "Good morning! How's your day going?", sender: "received"},
+                    {text: "It's going well! Just finished my morning meetings.", sender: "sent"}
+                ];
+                
+                initialMessages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.sender}`;
+                    
+                    const now = new Date();
+                    const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                                     now.getMinutes().toString().padStart(2, '0');
+                    
+                    const checkIcon = msg.sender === 'sent' ? '<i class="fas fa-check-double"></i>' : '';
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            ${msg.text}
+                            <div class="message-time">
+                                ${timeString} ${checkIcon}
+                            </div>
+                        </div>
+                    `;
+                    
+                    messagesContainer.insertBefore(messageDiv, messagesContainer.querySelector('.message-input-container'));
+                });
+                
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 500);
+        };
+
+        // Add touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.querySelector('.content').addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.querySelector('.content').addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - go to next tab
+                    const activeTab = document.querySelector('.tab.active');
+                    let nextTab = activeTab.nextElementSibling;
+                    if (nextTab && nextTab.classList.contains('tab')) {
+                        nextTab.click();
+                    }
+                } else {
+                    // Swipe right - go to previous tab
+                    const activeTab = document.querySelector('.tab.active');
+                    let prevTab = activeTab.previousElementSibling;
+                    if (prevTab && prevTab.classList.contains('tab')) {
+                        prevTab.click();
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
